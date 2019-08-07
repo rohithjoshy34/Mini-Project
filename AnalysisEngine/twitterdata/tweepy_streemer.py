@@ -1,7 +1,7 @@
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
- 
+import json
 import twitter_credentials
  
 # # # # TWITTER STREAMER # # # #
@@ -30,12 +30,15 @@ class StdOutListener(StreamListener):
     """
     def __init__(self, fetched_tweets_filename):
         self.fetched_tweets_filename = fetched_tweets_filename
-
+    
     def on_data(self, data):
         try:
-            print(data)
-            with open(self.fetched_tweets_filename, 'a') as tf:
-                tf.write(data)
+            parsed = json.loads(data);
+            tweet=parsed['text'];
+            print(tweet);
+            savefile = open(self.fetched_tweets_filename, 'a') 
+            savefile.write(tweet)
+            savefile.write('\n')
             return True
         except BaseException as e:
             print("Error on_data %s" % str(e))
@@ -49,8 +52,8 @@ class StdOutListener(StreamListener):
 if __name__ == '__main__':
  
     # Authenticate using config.py and connect to Twitter Streaming API.
-    hash_tag_list = ["donal trump", "hillary clinton", "barack obama", "bernie sanders"]
-    fetched_tweets_filename = "tweets.txt"
+    hash_tag_list = ["SushmaSwaraj"]
+    fetched_tweets_filename = "tweets.csv"
 
     twitter_streamer = TwitterStreamer()
     twitter_streamer.stream_tweets(fetched_tweets_filename, hash_tag_list)
