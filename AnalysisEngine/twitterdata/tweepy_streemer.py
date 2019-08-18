@@ -3,7 +3,7 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import json
 import twitter_credentials
- 
+import re
 # # # # TWITTER STREAMER # # # #
 class TwitterStreamer():
     """
@@ -34,10 +34,13 @@ class StdOutListener(StreamListener):
     def on_data(self, data):
         try:
             parsed = json.loads(data);
-            tweet=parsed['text'];
-            print(tweet);
-            savefile = open(self.fetched_tweets_filename, 'a') 
-            savefile.write(tweet)
+            tweet = parsed['text'];
+	    tweet1 = re.sub(r'(https|http)?:\/\/(\w|\.|\/|\?|\=|\&|\%)*\b', ' ', tweet)
+	    tweet2= re.sub(r'[^a-zA-Z0-9]+', ' ', tweet1)
+            '''tweet = re.sub('[^a-zA-Z0-9 \n\.]', ' ', tweet1)'''
+            print(tweet2)
+	    savefile = open(self.fetched_tweets_filename, 'a') 
+	    savefile.write(tweet2)
             savefile.write('\n')
             return True
         except BaseException as e:
@@ -52,7 +55,7 @@ class StdOutListener(StreamListener):
 if __name__ == '__main__':
  
     # Authenticate using config.py and connect to Twitter Streaming API.
-    hash_tag_list = ["SushmaSwaraj"]
+    hash_tag_list = ["Obama"]
     fetched_tweets_filename = "tweets.csv"
 
     twitter_streamer = TwitterStreamer()
